@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập / Đăng ký</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hop {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+      width: 320px;
+      text-align: left;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .khung_nhap {
+      position: relative;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px 35px 10px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .con_mat {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 16px;
+      color: #666;
+      user-select: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      background-color: #5563DE;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover { background-color: #3946B0; }
+
+    .chuyen {
+      margin-top: 15px;
+      color: #333;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .thongbao {
+      color: red;
+      font-size: 0.9em;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hop">
+    <h2 id="tieu_de">Đăng nhập</h2>
+
+    <label for="ten_dang_nhap">Tên đăng nhập:</label>
+    <div class="khung_nhap">
+      <input type="text" id="ten_dang_nhap" placeholder="Nhập tên đăng nhập" />
+    </div>
+
+    <label for="mat_khau">Mật khẩu:</label>
+    <div class="khung_nhap">
+      <input type="password" id="mat_khau" placeholder="Nhập mật khẩu" />
+      <span class="con_mat" id="hien_mat_khau">&#128065;</span>
+    </div>
+
+    <!-- Ô nhập lại mật khẩu (chỉ hiện khi đăng ký) -->
+    <div id="nhap_lai_mat_khau_div" style="display: none;">
+      <label for="nhap_lai_mat_khau">Nhập lại mật khẩu:</label>
+      <div class="khung_nhap">
+        <input type="password" id="nhap_lai_mat_khau" placeholder="Nhập lại mật khẩu" />
+        <span class="con_mat" id="hien_lai_mat_khau">&#128065;</span>
+      </div>
+    </div>
+
+    <button id="nut_gui">Đăng nhập</button>
+
+    <p class="chuyen" id="chuyen_form">Chưa có tài khoản? Đăng ký</p>
+    <p class="thongbao" id="thong_bao"></p>
+  </div>
+
+  <script>
+    const tieuDe = document.getElementById("tieu_de");
+    const chuyenForm = document.getElementById("chuyen_form");
+    const nutGui = document.getElementById("nut_gui");
+    const thongBao = document.getElementById("thong_bao");
+    const nhapLaiMatKhauDiv = document.getElementById("nhap_lai_mat_khau_div");
+
+    let laDangNhap = true;
+
+    // Hiện/ẩn mật khẩu
+    const hienMatKhau = document.getElementById("hien_mat_khau");
+    const hienLaiMatKhau = document.getElementById("hien_lai_mat_khau");
+    const oMatKhau = document.getElementById("mat_khau");
+    const oLaiMatKhau = document.getElementById("nhap_lai_mat_khau");
+
+    hienMatKhau.addEventListener("click", () => {
+      oMatKhau.type = oMatKhau.type === "password" ? "text" : "password";
+    });
+
+    hienLaiMatKhau.addEventListener("click", () => {
+      oLaiMatKhau.type = oLaiMatKhau.type === "password" ? "text" : "password";
+    });
+
+    // Chuyển qua lại giữa đăng nhập và đăng ký
+    chuyenForm.addEventListener("click", () => {
+      laDangNhap = !laDangNhap;
+      tieuDe.textContent = laDangNhap ? "Đăng nhập" : "Đăng ký";
+      nutGui.textContent = laDangNhap ? "Đăng nhập" : "Đăng ký";
+      chuyenForm.textContent = laDangNhap
+        ? "Chưa có tài khoản? Đăng ký"
+        : "Đã có tài khoản? Đăng nhập";
+      thongBao.textContent = "";
+      thongBao.style.color = "red";
+
+      nhapLaiMatKhauDiv.style.display = laDangNhap ? "none" : "block";
+    });
+
+    // Xử lý khi nhấn nút
+    nutGui.addEventListener("click", () => {
+      const ten = document.getElementById("ten_dang_nhap").value.trim();
+      const mk = oMatKhau.value.trim();
+      const nhapLai = oLaiMatKhau.value.trim();
+
+      if (!ten || !mk || (!laDangNhap && !nhapLai)) {
+        thongBao.textContent = "Vui lòng nhập đầy đủ thông tin!";
+        return;
+      }
+
+      if (!laDangNhap && mk !== nhapLai) {
+        thongBao.textContent = "Mật khẩu nhập lại không khớp!";
+        return;
+      }
+
+      if (laDangNhap) {
+        // Đăng nhập
+        const duLieuLuu = localStorage.getItem(ten);
+        if (!duLieuLuu) {
+          thongBao.textContent = "Tài khoản không tồn tại!";
+          return;
+        }
+
+        const nguoiDung = JSON.parse(duLieuLuu);
+        if (nguoiDung.matkhau === mk) {
+          thongBao.style.color = "green";
+          thongBao.textContent = "Đăng nhập thành công!";
+          setTimeout(() => {
+            localStorage.setItem("dangnhap_hien_tai", ten);
+            window.location.href = "trang_chinh.html";
+          }, 800);
+        } else {
+          thongBao.textContent = "Sai mật khẩu!";
+        }
+      } else {
+        // Đăng ký
+        if (localStorage.getItem(ten)) {
+          thongBao.textContent = "Tên đăng nhập đã tồn tại!";
+          return;
+        }
+
+        localStorage.setItem(ten, JSON.stringify({ tendangnhap: ten, matkhau: mk }));
+        thongBao.style.color = "green";
+        thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
+        laDangNhap = true;
+        tieuDe.textContent = "Đăng nhập";
+        nutGui.textContent = "Đăng nhập";
+        chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
+        nhapLaiMatKhauDiv.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
