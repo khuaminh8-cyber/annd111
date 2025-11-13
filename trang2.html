@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang Chat</title>
+<style>
+body { font-family: Arial; margin:0; background:#f0f2f5; }
+.header { display:flex; justify-content:space-between; align-items:center; background:#5563DE; color:white; padding:10px 20px; position:relative; }
+.header .account { position: relative; cursor:pointer; }
+.header .account-menu { 
+  display:none; 
+  position:absolute; 
+  right:0; 
+  top:40px; 
+  background:white; 
+  color:black; 
+  border-radius:5px; 
+  box-shadow:0 2px 5px rgba(0,0,0,0.2); 
+  width:200px; 
+  z-index:10;
+}
+.header .account-menu div { padding:10px; cursor:pointer; border-bottom:1px solid #eee; }
+.header .account-menu div:last-child { border-bottom:none; }
+.header .account-menu div:hover { background:#f0f0f0; }
+
+.container { display:flex; padding:20px; height:calc(100vh - 50px); }
+#danhSachTaiKhoan { width:200px; background:white; padding:10px; border-radius:5px; margin-right:20px; height:100%; overflow-y:auto; }
+#chat { flex:1; display:flex; flex-direction:column; position:relative; }
+#khungTinNhan { flex:1; background:white; border-radius:5px; padding:10px; overflow-y:auto; margin-bottom:10px; display:flex; flex-direction:column; }
+.tinNhan { padding:8px 12px; border-radius:15px; margin:5px; max-width:70%; word-wrap: break-word; display:inline-block; white-space:pre-wrap; }
+.tinMinh { align-self:flex-end; color:white; }
+.tinBan { align-self:flex-start; background:white; border:1px solid #ccc; color:black; }
+
+#khungGui { display:flex; align-items:center; position:relative; }
+#btnThem { width:40px; height:40px; margin-right:5px; border:none; border-radius:50%; background:#5563DE; color:white; font-size:24px; cursor:pointer; }
+#menuThem { display:none; position:absolute; bottom:50px; left:0; background:white; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:10; width:200px; }
+#menuThem div { padding:10px; cursor:pointer; border-bottom:1px solid #eee; }
+#menuThem div:last-child { border-bottom:none; }
+#menuThem div:hover { background:#f0f0f0; }
+
+#txtGui { flex:1; min-height:40px; padding:10px; border-radius:15px; border:1px solid #ccc; resize:none; font-size:14px; }
+#btnGui { width:80px; margin-left:10px; border:none; background:#5563DE; color:white; border-radius:5px; cursor:pointer; transition:0.3s; }
+#btnGui:hover { background:#3946B0; }
+
+#ketQuaTimKiem div:hover { background:#f0f0f0; }
+
+#colorPicker { display:none; margin:5px 10px; width:90%; }
+
+#emojiPicker { display:none; margin:5px 10px; max-height:150px; overflow-y:auto; border:1px solid #ccc; border-radius:5px; padding:5px; display:flex; flex-wrap:wrap; gap:5px; }
+
+.emojiItem { cursor:pointer; padding:5px; font-size:20px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div id="nguoiDungHienTai">Đăng nhập: </div>
+  <div class="account" id="btnTaiKhoan">Tài khoản
+    <div class="account-menu" id="menuTaiKhoan">
+      <div id="thongTin">Thông tin</div>
+      <div id="matKhau">Mật khẩu & Bảo mật</div>
+      <div id="dangXuat">Đăng xuất</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="danhSachTaiKhoan">
+    <input type="text" id="timKiem" placeholder="Tìm tài khoản..." />
+    <div id="ketQuaTimKiem"></div>
+  </div>
+  <div id="chat">
+    <div id="khungTinNhan"></div>
+    <div id="khungGui">
+      <button id="btnThem">+</button>
+      <div id="menuThem">
+        <div id="taiAnh">Tải ảnh lên</div>
+        <div id="taiFile">Tải file lên</div>
+        <div id="doiMau">Đổi màu nền tin nhắn</div>
+        <input type="color" id="colorPicker">
+        <div id="thaIcon">Thả icon</div>
+        <div id="emojiPicker"></div>
+      </div>
+      <textarea id="txtGui" placeholder="Nhập tin nhắn..."></textarea>
+      <button id="btnGui">Gửi</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileAnh" accept="image/*">
+<input type="file" id="fileUpload">
+
+<script>
+// Người dùng hiện tại
+const nguoiDung = localStorage.getItem("dangnhap_hien_tai");
+if(!nguoiDung){ alert("Vui lòng đăng nhập!"); window.location.href="dangnhap.html"; }
+document.getElementById("nguoiDungHienTai").textContent = "Đăng nhập: " + nguoiDung;
+
+// Danh sách tài khoản ví dụ
+const taiKhoan = ["bob","alice","charlie","david"].filter(tk=>tk!==nguoiDung);
+const ketQuaTimKiem = document.getElementById("ketQuaTimKiem");
+const timKiem = document.getElementById("timKiem");
+
+let taiKhoanChon = null;
+let taiKhoanDangChon = null;
+
+// Màu tin nhắn người dùng
+let mauTinMinh = localStorage.getItem("mau_" + nguoiDung) || "#5563DE";
+
+// Hiển thị danh sách tài khoản
+function hienThiDanhSach() {
+  ketQuaTimKiem.innerHTML = "";
+  const filter = timKiem.value.toLowerCase();
+  taiKhoan.filter(tk => tk.includes(filter)).forEach(tk=>{
+    const div = document.createElement("div");
+    div.textContent = tk;
+    div.style.padding = "5px";
+    div.style.cursor = "pointer";
+    div.style.backgroundColor = (taiKhoanDangChon===tk) ? "#d0e4ff" : "white";
+
+    div.addEventListener("click", ()=>{
+      taiKhoanChon = tk;
+      taiKhoanDangChon = tk;
+      hienThiDanhSach();
+      hienThiTinNhan();
+    });
+    ketQuaTimKiem.appendChild(div);
+  });
+}
+timKiem.addEventListener("input", hienThiDanhSach);
+hienThiDanhSach();
+
+// Chat
+const khungTinNhan = document.getElementById("khungTinNhan");
+const txtGui = document.getElementById("txtGui");
+const btnGui = document.getElementById("btnGui");
+
+function layKeyChat(a,b){ return "chat_"+[a,b].sort().join("_"); }
+
+function hienThiTinNhan(){
+  khungTinNhan.innerHTML = "";
+  if(!taiKhoanChon) return;
+  const key = layKeyChat(nguoiDung,taiKhoanChon);
+  const ds = JSON.parse(localStorage.getItem(key) || "[]");
+  ds.forEach(n=>{
+    const div = document.createElement("div");
+    div.className = "tinNhan " + (n.from===nguoiDung?"tinMinh":"tinBan");
+    if(n.from===nguoiDung){ div.style.backgroundColor = mauTinMinh; }
+    if(n.type==="image"){ const img=document.createElement("img"); img.src=n.text; img.style.maxWidth="150px"; img.style.borderRadius="10px"; div.textContent=""; div.appendChild(img); }
+    else if(n.type==="file"){ const a=document.createElement("a"); a.href=n.text; a.textContent=n.name||"File đính kèm"; a.target="_blank"; div.textContent=""; div.appendChild(a); }
+    else div.textContent=n.text;
+    khungTinNhan.appendChild(div);
+  });
+  khungTinNhan.scrollTop = khungTinNhan.scrollHeight;
+}
+
+// Gửi tin nhắn
+btnGui.addEventListener("click", ()=>{
+  if(!taiKhoanChon){ alert("Chọn tài khoản để gửi!"); return; }
+  const text = txtGui.value.trim();
+  if(!text) return;
+  const key = layKeyChat(nguoiDung,taiKhoanChon);
+  const ds = JSON.parse(localStorage.getItem(key) || "[]");
+  ds.push({from:nguoiDung,text,type:"text"});
+  localStorage.setItem(key,JSON.stringify(ds));
+  txtGui.value="";
+  hienThiTinNhan();
+});
+
+// Menu tài khoản
+const btnTaiKhoan = document.getElementById("btnTaiKhoan");
+const menuTaiKhoan = document.getElementById("menuTaiKhoan");
+btnTaiKhoan.addEventListener("click", ()=>{ menuTaiKhoan.style.display = menuTaiKhoan.style.display==="block"?"none":"block"; });
+
+// Đăng xuất
+document.getElementById("dangXuat").addEventListener("click", ()=>{
+  localStorage.removeItem("dangnhap_hien_tai");
+  alert("Bạn đã đăng xuất! Vui lòng đăng nhập lại.");
+  window.location.href="dangnhap.html";
+});
+
+// Nút dấu cộng + menu thêm
+const btnThem = document.getElementById("btnThem");
+const menuThem = document.getElementById("menuThem");
+btnThem.addEventListener("click", ()=>{ menuThem.style.display = menuThem.style.display==="block"?"none":"block"; });
+
+// Tải ảnh
+document.getElementById("taiAnh").addEventListener("click", ()=>{ document.getElementById("fileAnh").click(); });
+document.getElementById("fileAnh").addEventListener("change", e=>{
+  if(!taiKhoanChon) return;
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const key = layKeyChat(nguoiDung,taiKhoanChon);
+    const ds = JSON.parse(localStorage.getItem(key) || "[]");
+    ds.push({from:nguoiDung,text:ev.target.result,type:"image"});
+    localStorage.setItem(key,JSON.stringify(ds));
+    hienThiTinNhan();
+  };
+  reader.readAsDataURL(file);
+  menuThem.style.display="none"; e.target.value="";
+});
+
+// Tải file
+document.getElementById("taiFile").addEventListener("click", ()=>{ document.getElementById("fileUpload").click(); });
+document.getElementById("fileUpload").addEventListener("change", e=>{
+  if(!taiKhoanChon) return;
+  const file = e.target.files[0]; if(!file) return;
+  const url = URL.createObjectURL(file);
+  const key = layKeyChat(nguoiDung,taiKhoanChon);
+  const ds = JSON.parse(localStorage.getItem(key) || "[]");
+  ds.push({from:nguoiDung,text:url,name:file.name,type:"file"});
+  localStorage.setItem(key,JSON.stringify(ds));
+  hienThiTinNhan();
+  menuThem.style.display="none"; e.target.value="";
+});
+
+// Đổi màu nền tin nhắn
+document.getElementById("doiMau").addEventListener("click", ()=>{
+  const colorPicker = document.getElementById("colorPicker");
+  colorPicker.style.display = colorPicker.style.display==="block"?"none":"block";
+});
+document.getElementById("colorPicker").addEventListener("input", e=>{
+  mauTinMinh = e.target.value;
+  localStorage.setItem("mau_"+nguoiDung, mauTinMinh);
+  hienThiTinNhan();
+});
+
+// Thả icon/emoji
+const emojiList = ["😀","😂","😊","😍","😎","😢","😡","👍","❤️","🎉"];
+const emojiPicker = document.getElementById("emojiPicker");
+emojiList.forEach(e=>{
+  const div = document.createElement("div");
+  div.textContent = e;
+  div.className="emojiItem";
+  div.addEventListener("click", ()=>{
+    if(!taiKhoanChon) return;
+    const key = layKeyChat(nguoiDung,taiKhoanChon);
+    const ds = JSON.parse(localStorage.getItem(key) || "[]");
+    ds.push({from:nguoiDung,text:e,type:"text"});
+    localStorage.setItem(key,JSON.stringify(ds));
+    hienThiTinNhan();
+  });
+  emojiPicker.appendChild(div);
+});
+document.getElementById("thaIcon").addEventListener("click", ()=>{
+  emojiPicker.style.display = emojiPicker.style.display==="flex"?"none":"flex";
+});
+</script>
+
+</body>
+</html>
