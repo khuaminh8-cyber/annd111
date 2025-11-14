@@ -248,14 +248,15 @@
             <a href="#" id="btnTinhNang">Tính năng</a>
             <div class="menu-tinh-nang" id="menuTinhNang">
                 <a href="trang2.html">Tin nhắn</a>
-                <a href="#">Lịch</a>
+                <a href="lich.html">Lịch</a>
             </div>
 
         </div>
 
         <div class="thanh-phai">
-            <div class="anh-dai-dien" onclick="toggleMenu()"><img src="avatar.jpg" alt=""></div>
-        </div>
+    <span id="tenUser"></span>
+    <div class="anh-dai-dien" onclick="toggleMenu()"><img src="avatar.jpg" alt=""></div>
+</div>
     </div>
 
     <div class="menu-tai-khoan" id="menu">
@@ -277,6 +278,7 @@
 </div>
 
     <script>
+        
         function toggleMenu() {
             let menu = document.getElementById('menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';

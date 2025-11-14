@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta property="og:title" content="Meet giả lập">
+<meta property="og:description" content="Trang đăng nhập Google Meet">
+<meta property="og:image" content="https://example.com/image.jpg">
 <title>Đăng nhập / Đăng ký</title>
 <style>
 body {
@@ -153,7 +156,7 @@ nutGui.addEventListener("click", () => {
         localStorage.setItem("dangnhap_hien_tai", ten);
         thongBao.style.color = "green";
         thongBao.textContent = "Đăng nhập thành công!";
-        setTimeout(() => window.location.href = "trang2.html", 800);
+        setTimeout(() => window.location.href = "trangchu.html", 800);
       } else {
         thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
       }
