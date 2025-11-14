@@ -24,7 +24,7 @@ body { font-family: Arial; margin:0; background:#f0f2f5; }
 .header .account-menu div:last-child { border-bottom:none; }
 .header .account-menu div:hover { background:#f0f0f0; }
 
-.container { display:flex; padding:20px; height:calc(100vh - 50px); }
+.container { display:flex; padding:20px; height:calc(100vh - 50px);margin-bottom: 20px;}
 #danhSachTaiKhoan { width:200px; background:white; padding:10px; border-radius:5px; margin-right:20px; height:100%; overflow-y:auto; }
 #chat { flex:1; display:flex; flex-direction:column; position:relative; }
 #khungTinNhan { flex:1; background:white; border-radius:5px; padding:10px; overflow-y:auto; margin-bottom:10px; display:flex; flex-direction:column; }
@@ -40,7 +40,10 @@ body { font-family: Arial; margin:0; background:#f0f2f5; }
 #menuThem div:hover { background:#f0f0f0; }
 
 #txtGui { flex:1; min-height:40px; padding:10px; border-radius:15px; border:1px solid #ccc; resize:none; font-size:14px; }
-#btnGui { width:80px; margin-left:10px; border:none; background:#5563DE; color:white; border-radius:5px; cursor:pointer; transition:0.3s; }
+#btnGui { width:80px; margin-left:10px; border:none; background:#5563DE; color:white; border-radius:5px; cursor:pointer; transition:0.3s;padding: 10px 20px;
+    height: 50px;
+    border-radius: 8px;
+    font-size: 16px; }
 #btnGui:hover { background:#3946B0; }
 
 #ketQuaTimKiem div:hover { background:#f0f0f0; }
@@ -88,17 +91,52 @@ body { font-family: Arial; margin:0; background:#f0f2f5; }
   </div>
 </div>
 
-<input type="file" id="fileAnh" accept="image/*">
-<input type="file" id="fileUpload">
+
 
 <script>
+
 // Người dùng hiện tại
+// 🟦 KẾT NỐI WEBSOCKET TỚI SERVER (bạn thay URL đúng của bạn)
+const ws = new WebSocket("wss://TEN-SERVER.onrender.com");
+
+// Khi WebSocket mở
+ws.onopen = () => {
+  ws.send(JSON.stringify({
+    type: "login",
+    userId: localStorage.getItem("userId")
+  }));
+};
+
+// Nhận tin nhắn từ server
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  const key = layKeyChat(data.from, nguoiDung);
+  const ds = JSON.parse(localStorage.getItem(key) || "[]");
+
+  ds.push({
+    from: data.from,
+    text: data.message,
+    type: "text"
+  });
+
+  localStorage.setItem(key, JSON.stringify(ds));
+  hienThiTinNhan();
+};
+
 const nguoiDung = localStorage.getItem("dangnhap_hien_tai");
 if(!nguoiDung){ alert("Vui lòng đăng nhập!"); window.location.href="dangnhap.html"; }
-document.getElementById("nguoiDungHienTai").textContent = "Đăng nhập: " + nguoiDung;
+document.getElementById("nguoiDungHienTai").textContent = "Xin chào: " + nguoiDung + " 👋";
+
 
 // Danh sách tài khoản ví dụ
-const taiKhoan = ["bob","alice","charlie","david"].filter(tk=>tk!==nguoiDung);
+fetch("https://TEN-SERVER.onrender.com/users")
+  .then(res => res.json())
+  .then(data => {
+    const taiKhoan = data.filter(u => u.username !== nguoiDung);
+    // sau đó chạy hienThiDanhSach();
+  });
+
 const ketQuaTimKiem = document.getElementById("ketQuaTimKiem");
 const timKiem = document.getElementById("timKiem");
 
@@ -160,13 +198,24 @@ btnGui.addEventListener("click", ()=>{
   if(!taiKhoanChon){ alert("Chọn tài khoản để gửi!"); return; }
   const text = txtGui.value.trim();
   if(!text) return;
-  const key = layKeyChat(nguoiDung,taiKhoanChon);
+
+  ws.send(JSON.stringify({
+    type: "chat",
+    from: localStorage.getItem("userId"),
+    to: taiKhoanChon,
+    message: text
+  }));
+
+  const key = layKeyChat(nguoiDung, taiKhoanChon);
   const ds = JSON.parse(localStorage.getItem(key) || "[]");
-  ds.push({from:nguoiDung,text,type:"text"});
-  localStorage.setItem(key,JSON.stringify(ds));
-  txtGui.value="";
+
+  ds.push({from: nguoiDung, text, type: "text"});
+  localStorage.setItem(key, JSON.stringify(ds));
+
+  txtGui.value = "";
   hienThiTinNhan();
 });
+
 
 // Menu tài khoản
 const btnTaiKhoan = document.getElementById("btnTaiKhoan");

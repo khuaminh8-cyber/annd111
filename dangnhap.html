@@ -121,6 +121,92 @@
   </div>
 
   <script>
+    nutGui.addEventListener("click", () => {
+  const ten = document.getElementById("ten_dang_nhap").value.trim();
+  const mk = oMatKhau.value.trim();
+  const nhapLai = oLaiMatKhau.value.trim();
+
+  if (!ten || !mk || (!laDangNhap && !nhapLai)) {
+    thongBao.textContent = "Vui lòng nhập đầy đủ thông tin!";
+    return;
+  }
+
+  if (mk.length < 8) {
+    thongBao.textContent = "Mật khẩu phải có ít nhất 8 ký tự!";
+    return;
+  }
+
+  if (!laDangNhap && mk !== nhapLai) {
+    thongBao.textContent = "Mật khẩu nhập lại không khớp!";
+    return;
+  }
+
+  // =============================
+  // 🚀 ĐĂNG NHẬP
+  // =============================
+  if (laDangNhap) {
+    fetch("https://TEN-SERVER.onrender.com/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: ten,
+        password: mk
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "ok") {
+
+        // Lưu USER ID từ server
+        localStorage.setItem("userId", data.userId);
+
+        // Lưu username (để hiển thị)
+        localStorage.setItem("dangnhap_hien_tai", ten);
+
+        thongBao.style.color = "green";
+        thongBao.textContent = "Đăng nhập thành công!";
+
+        setTimeout(() => {
+          window.location.href = "trang2.html";
+        }, 800);
+
+      } else {
+        thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
+      }
+    });
+
+    return;
+  }
+
+  // =============================
+  // 🚀 ĐĂNG KÝ
+  // =============================
+  fetch("https://TEN-SERVER.onrender.com/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: ten,
+      password: mk
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "ok") {
+      thongBao.style.color = "green";
+      thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
+
+      laDangNhap = true;
+      tieuDe.textContent = "Đăng nhập";
+      nutGui.textContent = "Đăng nhập";
+      chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
+      nhapLaiMatKhauDiv.style.display = "none";
+
+    } else {
+      thongBao.textContent = "Tên đăng nhập đã tồn tại!";
+    }
+  });
+});
+
   const tieuDe = document.getElementById("tieu_de");
   const chuyenForm = document.getElementById("chuyen_form");
   const nutGui = document.getElementById("nut_gui");
@@ -180,11 +266,28 @@
     }
 
     if (laDangNhap) {
-      // Đăng nhập
-      const duLieuLuu = localStorage.getItem(ten);
-      if (!duLieuLuu) {
-        thongBao.textContent = "Tài khoản không tồn tại!";
-        return;
+      fetch("https://TEN-SERVER.onrender.com/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    username: ten,
+    password: mk
+  })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.status === "ok") {
+    thongBao.style.color = "green";
+    thongBao.textContent = "Đăng nhập thành công!";
+    localStorage.setItem("userId", data.userId);
+    setTimeout(() => {
+      window.location.href = "trang2.html";
+    }, 800);
+  } else {
+    thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
+  }
+});
+
       }
 
       const nguoiDung = JSON.parse(duLieuLuu);
@@ -201,8 +304,29 @@
     } else {
       // Đăng ký
       if (localStorage.getItem(ten)) {
-        thongBao.textContent = "Tên đăng nhập đã tồn tại!";
-        return;
+        tfetch("https://TEN-SERVER.onrender.com/register", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    username: ten,
+    password: mk
+  })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.status === "ok") {
+    thongBao.style.color = "green";
+    thongBao.textContent = "Đăng ký thành công!";
+    laDangNhap = true;
+    tieuDe.textContent = "Đăng nhập";
+    nutGui.textContent = "Đăng nhập";
+    chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
+    nhapLaiMatKhauDiv.style.display = "none";
+  } else {
+    thongBao.textContent = "Tên đăng nhập đã tồn tại!";
+  }
+});
+
       }
 
       localStorage.setItem(ten, JSON.stringify({ tendangnhap: ten, matkhau: mk }));

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ảnh full + chữ trong ảnh</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Khung chứa ảnh và chữ */
+    .khung-anh {
+        position: relative;
+        width: 100%;
+        height: 1000px; /* full màn hình */
+        overflow: hidden;
+    }
+
+    /* Ảnh nền */
+    .khung-anh img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* ảnh bao hết khung */
+    }
+
+    /* Chữ nằm đè trên ảnh */
+    .chu {
+        position: absolute;
+        color: white;
+        font-size: clamp(10px, 5vw, 20px);
+        font-weight: bold;
+        text-shadow: 0 0 10px rgb(136, 194, 172);
+        background-color: rgb(17, 17, 15);
+        padding: 30px;
+        
+        width: 70%;
+        height: auto;
+        
+    }
+
+    /* Link Trang chủ bên phải */
+    .ve-trang-chu {
+        position: absolute;
+        right: 20px;
+        top: 30px;
+        color: rgb(29, 18, 18);
+        font-size: 24px;
+        text-decoration: none;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgb(107, 223, 142);
+        background-color: aqua;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .ve-trang-chu:hover {
+        text-decoration: underline;
+    }
+    .thongtin{
+        background-color: black;
+        width: 100%;
+        color: beige;
+        padding: 20px;
+    }
+    .thanh-trai {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.thanh-trai img {
+    width: 60px;  /* chỉnh kích thước logo tùy ý */
+    height: 60px;
+    border-radius: 10px; /* nếu bạn muốn bo góc */
+}
+
+</style>
+</head>
+<body>
+
+<div class="khung-anh">
+    <img src="anhthongbao.png" alt="Ảnh nền">
+    <div class="thanh-trai">
+            <a href="trangchu.html"><img src="logo.jpg" alt="Logo"></a>
+        </div>
+
+    <!-- Chữ đè lên ảnh -->
+    <div class="chu" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <h3 style="background-color: blanchedalmond;color: black; padding: 10px;">Chào mừng bạn đến Annd</h3>
+        <p>Lưu ý:</p>
+        
+        <p>1.Tôn Trọng Lẫn Nhau</p>
+        <p>2.Cần dùng những ngôn ngữ chuẩn mực, văn minh</p>
+        <p>3.Không được công kích một cá nhân </p>
+        <p>4.Chia Sẻ Tích Cực và Xây Dựng</p>
+        <p>5.Báo Cáo Hành Vi Sai Trái: Mạnh dạn báo cáo (report) các hành vi vi phạm chuẩn mực để bảo vệ môi trường chung cho tất cả mọi người.</p>
+        <p>6.Duy Trì Sự Công Bằng: Đảm bảo rằng mọi hành động và phát ngôn đều hướng tới sự công bằng và bình đẳng cho tất cả các thành viên trong cộng đồng.</p>
+    </div>
+
+    <!-- Link trở về trang chủ -->
+    <a href="trangchu.html" class="ve-trang-chu">Trở về trang chủ</a>
+</div>
+<div class="thongtin">
+    <h3>Thông Tin Liên Hệ</h3>
+    <p><strong>📞 Điện thoại:</strong> 0866887461</p>
+    <p><strong>📧 Email:</strong> anndkocskh@gmail.com</p>
+    
+</div>
+
+</body>
+</html>

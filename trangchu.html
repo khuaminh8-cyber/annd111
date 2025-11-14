@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Web Demo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .thanh-cong-cu {
+            
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #222;
+            color: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        .thanh-trai img {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+        }
+
+        .thanh-giua {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;         /* giữ nằm ngang */
+            white-space: nowrap;   /* không cho xuống dòng */
+        }
+        .thanh-giua a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 24px;
+            width: auto;
+        }
+
+        .thanh-phai .anh-dai-dien {
+            width: 50px;
+            height: 50px;
+            
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .anh-dai-dien > img{
+            width: 100%;
+            border-radius: 25px;
+        }
+
+        /* Menu tài khoản */
+        .menu-tai-khoan {
+            position: absolute;
+            top: 65px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            width: 180px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 10;
+        }
+        .menu-tai-khoan a {
+            display: block;
+            padding: 12px;
+            text-decoration: none;
+            color: black;
+            border-bottom: 1px solid #ddd;
+        }
+        .menu-tai-khoan a:hover {
+            background-color: #afe3f8;
+            border-radius: 8px;
+        }
+
+        /* Ảnh nền */
+        .anh-nen {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        .anh-nen > img{
+            width: 100%;
+            display: block;
+        }
+        .anhlon{
+            position: relative;
+            width: 100vh;
+            height: 100vh;
+        }
+        .chu-tren-anh1 {
+            position: absolute;
+            top: 60%;
+            left: 40%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: clamp(24px, 6vw, 50px); /* Tự co chữ */
+            font-weight: bold;
+            text-shadow: 0 0 10px black;
+            z-index: 10;
+
+            /* hiệu ứng xuất hiện */
+            opacity: 0;
+            animation: hienChu 2s ease forwards;
+        }
+        .chu-tren-anh2 {
+            position: absolute;
+            top: 80%;
+            left: 40%;
+            transform: translate(-50%, -50%);
+            color: rgb(236, 245, 168);
+            font-size: clamp(16px, 4vw, 30px); /* Tự co chữ */
+            font-weight: bold;
+            text-shadow: 0 0 10px black;
+            z-index: 10;
+
+            /* hiệu ứng xuất hiện */
+            opacity: 0;
+            animation: hienChu 4s ease forwards;
+        }
+        .khoilogo{
+            width: 40px;
+            position: relative;
+             border-radius: 25px;
+
+        }
+        /* MENU CON TÍNH NĂNG */
+        .menu-tinh-nang {
+            position: absolute;
+            top: 50px;
+            left: 90%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 8px;
+            width: 180px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 10;
+            padding: 5px;
+            
+        }
+
+        .menu-tinh-nang a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: black;
+            border-bottom: 1px solid #c6cfb9;
+            
+        }
+
+        .menu-tinh-nang a:hover {
+            background-color: #a0d9ff;
+            border-radius: 5px;
+            
+        }
+        .menu-tinh-nang a:last-child{
+            border-bottom: none;
+        }
+
+                
+
+    @keyframes hienChu {
+        0% { opacity: 0; transform: translate(-50%, -40%); }
+        100% { opacity: 1; transform: translate(-50%, -50%); }
+    }
+    
+      .khoicuoi {
+    position: absolute;
+    left: 26px;
+    bottom: -5%;
+    margin-bottom: 20px;
+    width: 300px;
+    padding: 20px;
+    background: #020202;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-family: sans-serif;
+    animation: fadeIn 1s ease forwards;
+    z-index: 11;
+    margin: 50px auto;      /* căn giữa + đẩy xuống */
+}
+
+.khoicuoi h3 {
+    margin-bottom: 10px;
+    color: #fafafa;
+}
+
+.khoicuoi p {
+    margin: 6px 0;
+    color: #fdfdfd;
+}
+
+
+    
+
+        /* Responsive chữ nhỏ lại khi thu nhỏ màn hình */
+        @media (max-width: 900px) {
+            .thanh-giua a {
+                font-size: 20px;
+                margin: 0 12px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .thanh-giua a {
+                font-size: 18px;
+                margin: 0 10px;
+            }
+            .thanh-trai img {
+                width: 40px;
+                height: 40px;
+                
+            }
+            .anh-dai-dien {
+                width: 35px !important;
+                height: 35px !important;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .thanh-giua a {
+                font-size: 18px;
+                margin: 0 8px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="thanh-cong-cu">
+        <div class="thanh-trai">
+            <a href="trangchu.html"><img src="logo.jpg" alt="Logo"></a>
+        </div>
+
+        <div class="thanh-giua">
+            <a href="trangchu.html">Trang chủ</a>
+            <a href="gioithieuchung.html">Giới thiệu chung</a>
+            <a href="#" id="btnTinhNang">Tính năng</a>
+            <div class="menu-tinh-nang" id="menuTinhNang">
+                <a href="trang2.html">Tin nhắn</a>
+                <a href="#">Lịch</a>
+            </div>
+
+        </div>
+
+        <div class="thanh-phai">
+            <div class="anh-dai-dien" onclick="toggleMenu()"><img src="avatar.jpg" alt=""></div>
+        </div>
+    </div>
+
+    <div class="menu-tai-khoan" id="menu">
+        <a href="dangnhap.html">Đăng nhập tài khoản</a>
+        <a href="#">Liên hệ khách hàng</a>
+    </div>
+
+    <div class="anh-nen">
+        <img src="anhgiaodien.jpg" alt="lỗi ảnh" class="anhlon">
+        <h1 class="chu-tren-anh1">Chào mừng bạn đến Annd</h1><br><br>
+        <h3 class="chu-tren-anh2">-Nơi gắn kết mọi người lại với nhau-</h3>
+        
+    </div>
+    <div class="khoicuoi">
+    <h3>Thông Tin Liên Hệ</h3>
+    <p><strong>📞 Điện thoại:</strong> 0866887461</p>
+    <p><strong>📧 Email:</strong> anndkocskh@gmail.com</p>
+    
+</div>
+
+    <script>
+        function toggleMenu() {
+            let menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', function(e) {
+            let menu = document.getElementById('menu');
+            let avatar = document.querySelector('.anh-dai-dien');
+
+            if (!menu.contains(e.target) && !avatar.contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+        // Mở / đóng menu Tính năng
+document.getElementById("btnTinhNang").addEventListener("click", function (e) {
+    e.preventDefault();
+    let menu = document.getElementById("menuTinhNang");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+});
+
+// Ẩn menu khi bấm ra ngoài
+document.addEventListener("click", function(e) {
+    let menu = document.getElementById("menuTinhNang");
+    let btn = document.getElementById("btnTinhNang");
+
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+
+    </script>
+
+</body>
+</html>
