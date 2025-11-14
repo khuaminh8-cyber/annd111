@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const { v4: uuid } = require("uuid");
 const { WebSocketServer } = require("ws");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname)); // truy cập file tĩnh
 
 // =======================
 //  DATABASE GIẢ • LƯU TRONG RAM
@@ -19,18 +21,11 @@ const onlineUsers = {}; // userId -> username
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
 
-  if (users[username]) {
-    return res.json({ status: "error", message: "User already exists" });
-  }
+  if (users[username]) return res.json({ status: "error", message: "User already exists" });
 
   const userId = uuid();
-
-  users[username] = {
-    password,
-    userId
-  };
-
-  return res.json({ status: "ok", userId });
+  users[username] = { password, userId };
+  res.json({ status: "ok", userId });
 });
 
 // =======================
@@ -39,18 +34,30 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  if (!users[username]) {
-    return res.json({ status: "error", message: "Wrong username" });
-  }
+  if (!users[username]) return res.json({ status: "error", message: "Wrong username" });
+  if (users[username].password !== password) return res.json({ status: "error", message: "Wrong password" });
 
-  if (users[username].password !== password) {
-    return res.json({ status: "error", message: "Wrong password" });
-  }
+  res.json({ status: "ok", userId: users[username].userId });
+});
 
-  return res.json({
-    status: "ok",
-    userId: users[username].userId
-  });
+// =======================
+//    API: TÌM KIẾM USERNAME
+// =======================
+app.get("/search", (req, res) => {
+  const q = req.query.q?.toLowerCase() || "";
+
+  const result = Object.keys(users).filter(username =>
+    username.toLowerCase().includes(q)
+  );
+
+  res.json({ status: "ok", result });
+});
+
+// =======================
+//    TRẢ VỀ TRANG HTML
+// =======================
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "trang2.html"));
 });
 
 // =======================
@@ -64,30 +71,16 @@ wss.on("connection", (ws, request) => {
 
   onlineUsers[userId] = username;
 
-  // Gửi danh sách user online
-  broadcast({
-    type: "onlineList",
-    users: onlineUsers
-  });
+  broadcast({ type: "onlineList", users: onlineUsers });
 
   ws.on("message", msg => {
     const text = msg.toString();
-
-    broadcast({
-      type: "chat",
-      userId,
-      username,
-      text
-    });
+    broadcast({ type: "chat", userId, username, text });
   });
 
   ws.on("close", () => {
     delete onlineUsers[userId];
-
-    broadcast({
-      type: "onlineList",
-      users: onlineUsers
-    });
+    broadcast({ type: "onlineList", users: onlineUsers });
   });
 });
 
@@ -102,19 +95,15 @@ function broadcast(data) {
 // =======================
 //   SERVER LISTEN
 // =======================
-const server = app.listen(10000, () => {
-  console.log("Server đang chạy cổng 10000");
+const server = app.listen(10001, () => {
+  console.log("Server đang chạy cổng 10001");
 });
 
 // Kết nối WebSocket
 server.on("upgrade", (request, socket, head) => {
   const url = new URL(request.url, "http://localhost");
-
-  const userId = url.searchParams.get("userId");
-  const username = url.searchParams.get("username");
-
-  request.userId = userId;
-  request.username = username;
+  request.userId = url.searchParams.get("userId");
+  request.username = url.searchParams.get("username");
 
   wss.handleUpgrade(request, socket, head, ws => {
     wss.emit("connection", ws, request);

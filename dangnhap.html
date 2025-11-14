@@ -1,127 +1,133 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đăng nhập / Đăng ký</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: url('annd1.png') no-repeat center center fixed;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Đăng nhập / Đăng ký</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: url('annd1.png') no-repeat center center fixed;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .hop {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-      width: 320px;
-      text-align: left;
-    }
+.hop {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+  width: 320px;
+  text-align: left;
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+h2 { text-align: center; margin-bottom: 20px; }
+label { font-weight: bold; display: block; margin-top: 10px; margin-bottom: 5px; }
+.khung_nhap { position: relative; width: 100%; margin-bottom: 10px; }
 
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
+input {
+  width: 80%;
+  padding: 10px 35px 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
 
-    .khung_nhap {
-      position: relative;
-      width: 100%;
-      margin-bottom: 10px;
-    }
+.con_mat {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  user-select: none;
+}
 
-    input {
-      width: 80%;
-      padding: 10px 35px 10px 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  background-color: #5563DE;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
-    .con_mat {
-      position: absolute;
-      right: 30px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 16px;
-      color: #666;
-      user-select: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      background-color: #5563DE;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover { background-color: #3946B0; }
-
-    .chuyen {
-      margin-top: 15px;
-      color: #333;
-      text-align: center;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .thongbao {
-      color: red;
-      font-size: 0.9em;
-      text-align: center;
-      margin-top: 10px;
-    }
-  </style>
+button:hover { background-color: #3946B0; }
+.chuyen { margin-top: 15px; color: #333; text-align: center; cursor: pointer; text-decoration: underline; }
+.thongbao { color: red; font-size: 0.9em; text-align: center; margin-top: 10px; }
+</style>
 </head>
 <body>
-  <div class="hop">
-    <h2 id="tieu_de">Đăng nhập</h2>
+<div class="hop">
+  <h2 id="tieu_de">Đăng nhập</h2>
 
-    <label for="ten_dang_nhap">Tên đăng nhập:</label>
-    <div class="khung_nhap">
-      <input type="text" id="ten_dang_nhap" placeholder="Nhập tên đăng nhập" />
-    </div>
-
-    <label for="mat_khau">Mật khẩu:</label>
-    <div class="khung_nhap">
-      <input type="password" id="mat_khau" placeholder="Nhập mật khẩu" />
-      <span class="con_mat" id="hien_mat_khau">&#128065;</span>
-    </div>
-
-    <!-- Ô nhập lại mật khẩu (chỉ hiện khi đăng ký) -->
-    <div id="nhap_lai_mat_khau_div" style="display: none;">
-      <label for="nhap_lai_mat_khau">Nhập lại mật khẩu:</label>
-      <div class="khung_nhap">
-        <input type="password" id="nhap_lai_mat_khau" placeholder="Nhập lại mật khẩu" />
-        <span class="con_mat" id="hien_lai_mat_khau">&#128065;</span>
-      </div>
-    </div>
-
-    <button id="nut_gui">Đăng nhập</button>
-
-    <p class="chuyen" id="chuyen_form">Chưa có tài khoản? Đăng ký</p>
-    <p class="thongbao" id="thong_bao"></p>
+  <label for="ten_dang_nhap">Tên đăng nhập:</label>
+  <div class="khung_nhap">
+    <input type="text" id="ten_dang_nhap" placeholder="Nhập tên đăng nhập" />
   </div>
 
-  <script>
-    nutGui.addEventListener("click", () => {
+  <label for="mat_khau">Mật khẩu:</label>
+  <div class="khung_nhap">
+    <input type="password" id="mat_khau" placeholder="Nhập mật khẩu" />
+    <span class="con_mat" id="hien_mat_khau">&#128065;</span>
+  </div>
+
+  <div id="nhap_lai_mat_khau_div" style="display: none;">
+    <label for="nhap_lai_mat_khau">Nhập lại mật khẩu:</label>
+    <div class="khung_nhap">
+      <input type="password" id="nhap_lai_mat_khau" placeholder="Nhập lại mật khẩu" />
+      <span class="con_mat" id="hien_lai_mat_khau">&#128065;</span>
+    </div>
+  </div>
+
+  <button id="nut_gui">Đăng nhập</button>
+  <p class="chuyen" id="chuyen_form">Chưa có tài khoản? Đăng ký</p>
+  <p class="thongbao" id="thong_bao"></p>
+</div>
+
+<script>
+const tieuDe = document.getElementById("tieu_de");
+const chuyenForm = document.getElementById("chuyen_form");
+const nutGui = document.getElementById("nut_gui");
+const thongBao = document.getElementById("thong_bao");
+const nhapLaiMatKhauDiv = document.getElementById("nhap_lai_mat_khau_div");
+
+const oMatKhau = document.getElementById("mat_khau");
+const oLaiMatKhau = document.getElementById("nhap_lai_mat_khau");
+const hienMatKhau = document.getElementById("hien_mat_khau");
+const hienLaiMatKhau = document.getElementById("hien_lai_mat_khau");
+
+let laDangNhap = true;
+
+// Hiện/ẩn mật khẩu
+hienMatKhau.addEventListener("click", () => {
+  oMatKhau.type = oMatKhau.type === "password" ? "text" : "password";
+});
+hienLaiMatKhau.addEventListener("click", () => {
+  oLaiMatKhau.type = oLaiMatKhau.type === "password" ? "text" : "password";
+});
+
+// Chuyển giữa đăng nhập và đăng ký
+chuyenForm.addEventListener("click", () => {
+  laDangNhap = !laDangNhap;
+  tieuDe.textContent = laDangNhap ? "Đăng nhập" : "Đăng ký";
+  nutGui.textContent = laDangNhap ? "Đăng nhập" : "Đăng ký";
+  chuyenForm.textContent = laDangNhap
+    ? "Chưa có tài khoản? Đăng ký"
+    : "Đã có tài khoản? Đăng nhập";
+  thongBao.textContent = "";
+  thongBao.style.color = "red";
+  nhapLaiMatKhauDiv.style.display = laDangNhap ? "none" : "block";
+});
+
+// Xử lý nút đăng nhập/đăng ký
+nutGui.addEventListener("click", () => {
   const ten = document.getElementById("ten_dang_nhap").value.trim();
   const mk = oMatKhau.value.trim();
   const nhapLai = oLaiMatKhau.value.trim();
@@ -130,216 +136,51 @@
     thongBao.textContent = "Vui lòng nhập đầy đủ thông tin!";
     return;
   }
+  if (mk.length < 8) { thongBao.textContent = "Mật khẩu phải có ít nhất 8 ký tự!"; return; }
+  if (!laDangNhap && mk !== nhapLai) { thongBao.textContent = "Mật khẩu nhập lại không khớp!"; return; }
 
-  if (mk.length < 8) {
-    thongBao.textContent = "Mật khẩu phải có ít nhất 8 ký tự!";
-    return;
-  }
-
-  if (!laDangNhap && mk !== nhapLai) {
-    thongBao.textContent = "Mật khẩu nhập lại không khớp!";
-    return;
-  }
-
-  // =============================
-  // 🚀 ĐĂNG NHẬP
-  // =============================
   if (laDangNhap) {
-    fetch("https://TEN-SERVER.onrender.com/login", {
+    // Đăng nhập
+    fetch("https://annd111.onrender.com/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: ten,
-        password: mk
-      })
+      body: JSON.stringify({ username: ten, password: mk })
     })
     .then(res => res.json())
     .then(data => {
       if (data.status === "ok") {
-
-        // Lưu USER ID từ server
         localStorage.setItem("userId", data.userId);
-
-        // Lưu username (để hiển thị)
         localStorage.setItem("dangnhap_hien_tai", ten);
-
         thongBao.style.color = "green";
         thongBao.textContent = "Đăng nhập thành công!";
-
-        setTimeout(() => {
-          window.location.href = "trang2.html";
-        }, 800);
-
+        setTimeout(() => window.location.href = "trang2.html", 800);
       } else {
         thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
       }
     });
-
-    return;
-  }
-
-  // =============================
-  // 🚀 ĐĂNG KÝ
-  // =============================
-  fetch("https://TEN-SERVER.onrender.com/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: ten,
-      password: mk
+  } else {
+    // Đăng ký
+    fetch("https://annd111.onrender.com/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: ten, password: mk })
     })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === "ok") {
-      thongBao.style.color = "green";
-      thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
-
-      laDangNhap = true;
-      tieuDe.textContent = "Đăng nhập";
-      nutGui.textContent = "Đăng nhập";
-      chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
-      nhapLaiMatKhauDiv.style.display = "none";
-
-    } else {
-      thongBao.textContent = "Tên đăng nhập đã tồn tại!";
-    }
-  });
-});
-
-  const tieuDe = document.getElementById("tieu_de");
-  const chuyenForm = document.getElementById("chuyen_form");
-  const nutGui = document.getElementById("nut_gui");
-  const thongBao = document.getElementById("thong_bao");
-  const nhapLaiMatKhauDiv = document.getElementById("nhap_lai_mat_khau_div");
-
-  let laDangNhap = true;
-
-  // Hiện/ẩn mật khẩu
-  const hienMatKhau = document.getElementById("hien_mat_khau");
-  const hienLaiMatKhau = document.getElementById("hien_lai_mat_khau");
-  const oMatKhau = document.getElementById("mat_khau");
-  const oLaiMatKhau = document.getElementById("nhap_lai_mat_khau");
-
-  hienMatKhau.addEventListener("click", () => {
-    oMatKhau.type = oMatKhau.type === "password" ? "text" : "password";
-  });
-
-  hienLaiMatKhau.addEventListener("click", () => {
-    oLaiMatKhau.type = oLaiMatKhau.type === "password" ? "text" : "password";
-  });
-
-  // Chuyển qua lại giữa đăng nhập và đăng ký
-  chuyenForm.addEventListener("click", () => {
-    laDangNhap = !laDangNhap;
-    tieuDe.textContent = laDangNhap ? "Đăng nhập" : "Đăng ký";
-    nutGui.textContent = laDangNhap ? "Đăng nhập" : "Đăng ký";
-    chuyenForm.textContent = laDangNhap
-      ? "Chưa có tài khoản? Đăng ký"
-      : "Đã có tài khoản? Đăng nhập";
-    thongBao.textContent = "";
-    thongBao.style.color = "red";
-
-    nhapLaiMatKhauDiv.style.display = laDangNhap ? "none" : "block";
-  });
-
-  // Xử lý khi nhấn nút
-  nutGui.addEventListener("click", () => {
-    const ten = document.getElementById("ten_dang_nhap").value.trim();
-    const mk = oMatKhau.value.trim();
-    const nhapLai = oLaiMatKhau.value.trim();
-
-    if (!ten || !mk || (!laDangNhap && !nhapLai)) {
-      thongBao.textContent = "Vui lòng nhập đầy đủ thông tin!";
-      return;
-    }
-
-    // 🔹 Kiểm tra độ dài mật khẩu
-    if (mk.length < 8) {
-      thongBao.textContent = "Mật khẩu phải có ít nhất 8 ký tự!";
-      return;
-    }
-
-    if (!laDangNhap && mk !== nhapLai) {
-      thongBao.textContent = "Mật khẩu nhập lại không khớp!";
-      return;
-    }
-
-    if (laDangNhap) {
-      fetch("https://TEN-SERVER.onrender.com/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    username: ten,
-    password: mk
-  })
-})
-.then(res => res.json())
-.then(data => {
-  if (data.status === "ok") {
-    thongBao.style.color = "green";
-    thongBao.textContent = "Đăng nhập thành công!";
-    localStorage.setItem("userId", data.userId);
-    setTimeout(() => {
-      window.location.href = "trang2.html";
-    }, 800);
-  } else {
-    thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
-  }
-});
-
-      }
-
-      const nguoiDung = JSON.parse(duLieuLuu);
-      if (nguoiDung.matkhau === mk) {
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "ok") {
         thongBao.style.color = "green";
-        thongBao.textContent = "Đăng nhập thành công!";
-        setTimeout(() => {
-          localStorage.setItem("dangnhap_hien_tai", ten);
-          window.location.href = "trang2.html";
-        }, 800);
+        thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
+        laDangNhap = true;
+        tieuDe.textContent = "Đăng nhập";
+        nutGui.textContent = "Đăng nhập";
+        chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
+        nhapLaiMatKhauDiv.style.display = "none";
       } else {
-        thongBao.textContent = "Sai mật khẩu!";
+        thongBao.textContent = "Tên đăng nhập đã tồn tại!";
       }
-    } else {
-      // Đăng ký
-      if (localStorage.getItem(ten)) {
-        tfetch("https://TEN-SERVER.onrender.com/register", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    username: ten,
-    password: mk
-  })
-})
-.then(res => res.json())
-.then(data => {
-  if (data.status === "ok") {
-    thongBao.style.color = "green";
-    thongBao.textContent = "Đăng ký thành công!";
-    laDangNhap = true;
-    tieuDe.textContent = "Đăng nhập";
-    nutGui.textContent = "Đăng nhập";
-    chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
-    nhapLaiMatKhauDiv.style.display = "none";
-  } else {
-    thongBao.textContent = "Tên đăng nhập đã tồn tại!";
+    });
   }
 });
-
-      }
-
-      localStorage.setItem(ten, JSON.stringify({ tendangnhap: ten, matkhau: mk }));
-      thongBao.style.color = "green";
-      thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
-      laDangNhap = true;
-      tieuDe.textContent = "Đăng nhập";
-      nutGui.textContent = "Đăng nhập";
-      chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
-      nhapLaiMatKhauDiv.style.display = "none";
-    }
-  });
 </script>
-
 </body>
 </html>
