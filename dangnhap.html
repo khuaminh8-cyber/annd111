@@ -3,9 +3,6 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta property="og:title" content="Annd nè">
-<meta property="og:description" content="Trang đăng nhập Annd">
-<meta property="og:image" content="logo.jpg">
 <title>Đăng nhập / Đăng ký</title>
 <style>
 body {
@@ -16,7 +13,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-
 .hop {
   background: white;
   padding: 30px;
@@ -25,11 +21,9 @@ body {
   width: 320px;
   text-align: left;
 }
-
 h2 { text-align: center; margin-bottom: 20px; }
 label { font-weight: bold; display: block; margin-top: 10px; margin-bottom: 5px; }
 .khung_nhap { position: relative; width: 100%; margin-bottom: 10px; }
-
 input {
   width: 80%;
   padding: 10px 35px 10px 10px;
@@ -37,7 +31,6 @@ input {
   border-radius: 5px;
   font-size: 14px;
 }
-
 .con_mat {
   position: absolute;
   right: 30px;
@@ -48,7 +41,6 @@ input {
   color: #666;
   user-select: none;
 }
-
 button {
   width: 100%;
   padding: 10px;
@@ -60,7 +52,6 @@ button {
   cursor: pointer;
   transition: 0.3s;
 }
-
 button:hover { background-color: #3946B0; }
 .chuyen { margin-top: 15px; color: #333; text-align: center; cursor: pointer; text-decoration: underline; }
 .thongbao { color: red; font-size: 0.9em; text-align: center; margin-top: 10px; }
@@ -129,6 +120,14 @@ chuyenForm.addEventListener("click", () => {
   nhapLaiMatKhauDiv.style.display = laDangNhap ? "none" : "block";
 });
 
+// Lưu trữ tài khoản trong LocalStorage
+function layDanhSachNguoiDung() {
+  return JSON.parse(localStorage.getItem("users") || "{}");
+}
+function luuDanhSachNguoiDung(users) {
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
 // Xử lý nút đăng nhập/đăng ký
 nutGui.addEventListener("click", () => {
   const ten = document.getElementById("ten_dang_nhap").value.trim();
@@ -142,46 +141,39 @@ nutGui.addEventListener("click", () => {
   if (mk.length < 8) { thongBao.textContent = "Mật khẩu phải có ít nhất 8 ký tự!"; return; }
   if (!laDangNhap && mk !== nhapLai) { thongBao.textContent = "Mật khẩu nhập lại không khớp!"; return; }
 
+  const users = layDanhSachNguoiDung();
+
   if (laDangNhap) {
     // Đăng nhập
-    fetch("https://annd111.onrender.com/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: ten, password: mk })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === "ok") {
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("dangnhap_hien_tai", ten);
-        thongBao.style.color = "green";
-        thongBao.textContent = "Đăng nhập thành công!";
-        setTimeout(() => window.location.href = "trangchu.html", 800);
-      } else {
-        thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
-      }
-    });
+   if(users[ten] && users[ten] === mk) {
+  localStorage.setItem("dangnhap_hien_tai", ten);
+  thongBao.style.color = "green";
+  thongBao.textContent = "Đăng nhập thành công!";
+  setTimeout(() => {
+    window.location.href = "trangchu.html";
+  }, 500); // chờ 0.5 giây trước khi chuyển trang
+} else {
+  thongBao.style.color = "red";
+  thongBao.textContent = "Sai tài khoản hoặc mật khẩu!";
+}
+
   } else {
     // Đăng ký
-    fetch("https://annd111.onrender.com/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: ten, password: mk })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === "ok") {
-        thongBao.style.color = "green";
-        thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
-        laDangNhap = true;
-        tieuDe.textContent = "Đăng nhập";
-        nutGui.textContent = "Đăng nhập";
-        chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
-        nhapLaiMatKhauDiv.style.display = "none";
-      } else {
-        thongBao.textContent = "Tên đăng nhập đã tồn tại!";
-      }
-    });
+    if(users[ten]) {
+      thongBao.style.color = "red";
+      thongBao.textContent = "Tên đăng nhập đã tồn tại!";
+    } else {
+      users[ten] = mk;
+      luuDanhSachNguoiDung(users);
+      thongBao.style.color = "green";
+      thongBao.textContent = "Đăng ký thành công! Hãy đăng nhập.";
+      // Chuyển về đăng nhập
+      laDangNhap = true;
+      tieuDe.textContent = "Đăng nhập";
+      nutGui.textContent = "Đăng nhập";
+      chuyenForm.textContent = "Chưa có tài khoản? Đăng ký";
+      nhapLaiMatKhauDiv.style.display = "none";
+    }
   }
 });
 </script>

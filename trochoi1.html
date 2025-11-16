@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Phiêu lưu gấu con</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(to top, #87ceeb, #f0fff0);
+    font-family: sans-serif;
+  }
+
+  #gameCanvas {
+    display: block;
+    margin: 0 auto;
+    background: #cceeff;
+  }
+
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: #2e8b57;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+<div id="score">Điểm: 0</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let score = 0;
+let gameOver = false;
+
+// Gấu con
+const bear = {
+  x: 50,
+  y: 300,
+  width: 50,
+  height: 50,
+  dy: 0,
+  gravity: 0.8,
+  jumpForce: -15,
+  grounded: true
+};
+
+// Obstacles
+let obstacles = [];
+let obstacleTimer = 0;
+let obstacleInterval = 1500;
+
+// Hearts
+let hearts = [];
+let heartTimer = 0;
+let heartInterval = 3000;
+
+// Load hình
+const bearImg = new Image();
+bearImg.src = 'https://i.imgur.com/QWcTzht.png'; // hình gấu hoạt động tốt
+const obstacleImg = new Image();
+obstacleImg.src = 'https://i.imgur.com/ZnPhV9L.png'; // đá
+const heartImg = new Image();
+heartImg.src = 'https://i.imgur.com/1Zt6kW5.png'; // trái tim
+
+// Nhảy
+function jump() {
+  if(bear.grounded){
+    bear.dy = bear.jumpForce;
+    bear.grounded = false;
+  }
+}
+document.addEventListener('keydown', e => {
+  if(e.code === 'Space') jump();
+});
+canvas.addEventListener('click', jump);
+
+// Vẽ gấu
+function drawBear() {
+  if(bearImg.complete){
+    ctx.drawImage(bearImg, bear.x, bear.y, bear.width, bear.height);
+  } else {
+    // fallback: hình chữ nhật nâu nếu hình chưa load
+    ctx.fillStyle = 'brown';
+    ctx.fillRect(bear.x, bear.y, bear.width, bear.height);
+  }
+}
+
+// Vẽ obstacles
+function drawObstacles() {
+  obstacles.forEach(obs => {
+    if(obstacleImg.complete){
+      ctx.drawImage(obstacleImg, obs.x, obs.y, obs.width, obs.height);
+    } else {
+      ctx.fillStyle = 'gray';
+      ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+    }
+  });
+}
+
+// Vẽ hearts
+function drawHearts() {
+  hearts.forEach(h => {
+    if(heartImg.complete){
+      ctx.drawImage(heartImg, h.x, h.y, h.width, h.height);
+    } else {
+      ctx.fillStyle = 'red';
+      ctx.fillRect(h.x, h.y, h.width, h.height);
+    }
+  });
+}
+
+// Update game
+function update(deltaTime) {
+  if(gameOver) return;
+
+  // Gấu di chuyển
+  bear.dy += bear.gravity;
+  bear.y += bear.dy;
+  if(bear.y + bear.height >= canvas.height){
+    bear.y = canvas.height - bear.height;
+    bear.dy = 0;
+    bear.grounded = true;
+  }
+
+  // Obstacles
+  obstacleTimer += deltaTime;
+  if(obstacleTimer > obstacleInterval){
+    const obsHeight = 40 + Math.random() * 30;
+    obstacles.push({x: canvas.width, y: canvas.height - obsHeight, width: 30, height: obsHeight});
+    obstacleTimer = 0;
+  }
+  obstacles.forEach((obs, i) => {
+    obs.x -= 5;
+    // Va chạm
+    if(bear.x < obs.x + obs.width &&
+       bear.x + bear.width > obs.x &&
+       bear.y < obs.y + obs.height &&
+       bear.y + bear.height > obs.y){
+         gameOver = true;
+         alert("Game Over! Điểm: " + Math.floor(score));
+         document.location.reload();
+    }
+    if(obs.x + obs.width < 0) obstacles.splice(i,1);
+  });
+
+  // Hearts
+  heartTimer += deltaTime;
+  if(heartTimer > heartInterval){
+    const hY = canvas.height - 80 - Math.random() * 100;
+    hearts.push({x: canvas.width, y: hY, width: 30, height: 30});
+    heartTimer = 0;
+  }
+  hearts.forEach((h,i)=>{
+    h.x -= 5;
+    if(bear.x < h.x + h.width &&
+       bear.x + bear.width > h.x &&
+       bear.y < h.y + h.height &&
+       bear.y + bear.height > h.y){
+         score += 10;
+         document.getElementById('score').innerText = "Điểm: " + Math.floor(score);
+         hearts.splice(i,1);
+    }
+    if(h.x + h.width < 0) hearts.splice(i,1);
+  });
+
+  // Tăng điểm theo thời gian
+  score += 0.01;
+  document.getElementById('score').innerText = "Điểm: " + Math.floor(score);
+}
+
+// Vẽ
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawBear();
+  drawObstacles();
+  drawHearts();
+}
+
+// Game loop
+let lastTime = 0;
+function gameLoop(timestamp){
+  const deltaTime = timestamp - lastTime;
+  lastTime = timestamp;
+  update(deltaTime);
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
+</script>
+
+</body>
+</html>

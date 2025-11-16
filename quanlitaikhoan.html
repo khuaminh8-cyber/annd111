@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý tài khoản</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}
+
+.container {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  width: 500px;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header span {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.header button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #DE5555;
+  color: white;
+  cursor: pointer;
+}
+
+.header button:hover {
+  background-color: #B03939;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button#addBtn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #5563DE;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button#addBtn:hover { background-color: #3946B0; }
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #5563DE;
+  color: white;
+}
+
+.deleteBtn {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span id="currentUser"></span>
+    <button id="logoutBtn">Đăng xuất</button>
+  </div>
+
+  <h2>Quản lý tài khoản</h2>
+
+  <label for="app">Tên ứng dụng:</label>
+  <input type="text" id="app" placeholder="Ví dụ: Gmail">
+
+  <label for="username">Tên tài khoản:</label>
+  <input type="text" id="username" placeholder="Tên đăng nhập">
+
+  <label for="password">Mật khẩu:</label>
+  <input type="text" id="password" placeholder="Mật khẩu">
+
+  <button id="addBtn">Thêm tài khoản</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ứng dụng</th>
+        <th>Tài khoản</th>
+        <th>Mật khẩu</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="accountList"></tbody>
+  </table>
+</div>
+
+<script>
+const currentUser = document.getElementById("currentUser");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const appInput = document.getElementById('app');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const addBtn = document.getElementById('addBtn');
+const accountList = document.getElementById('accountList');
+
+// Kiểm tra đăng nhập
+const user = localStorage.getItem("dangnhap_hien_tai");
+if(!user) {
+  // Chưa đăng nhập → quay về trang chủ
+  window.location.href = "trangchu.html";
+} else {
+  currentUser.textContent = user;
+}
+
+// Đăng xuất
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("dangnhap_hien_tai");
+  window.location.href = "trangchu.html";
+});
+
+// LocalStorage cho các tài khoản
+function getAccounts() {
+  return JSON.parse(localStorage.getItem('accounts_' + user) || '[]'); // riêng cho từng user
+}
+
+function saveAccounts(accounts) {
+  localStorage.setItem('accounts_' + user, JSON.stringify(accounts));
+}
+
+function renderAccounts() {
+  const accounts = getAccounts();
+  accountList.innerHTML = '';
+  accounts.forEach((acc, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${acc.app}</td>
+      <td>${acc.username}</td>
+      <td>${acc.password}</td>
+      <td><button class="deleteBtn" onclick="deleteAccount(${index})">Xóa</button></td>
+    `;
+    accountList.appendChild(tr);
+  });
+}
+
+// Thêm tài khoản
+addBtn.addEventListener('click', () => {
+  const app = appInput.value.trim();
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if(!app || !username || !password) {
+    alert("Vui lòng nhập đầy đủ thông tin!");
+    return;
+  }
+
+  const accounts = getAccounts();
+  accounts.push({app, username, password});
+  saveAccounts(accounts);
+  renderAccounts();
+
+  appInput.value = '';
+  usernameInput.value = '';
+  passwordInput.value = '';
+});
+
+// Xóa tài khoản
+function deleteAccount(index) {
+  const accounts = getAccounts();
+  accounts.splice(index, 1);
+  saveAccounts(accounts);
+  renderAccounts();
+}
+
+// Hiển thị lần đầu
+renderAccounts();
+</script>
+</body>
+</html>

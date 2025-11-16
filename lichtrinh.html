@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quản lý lịch trình</title>
+
+<style>
+    body {
+        font-family: Arial;
+        background: #6deb93;
+        padding: 20px;
+    }
+    .container {
+        width: 430px;
+        background: white;
+        padding: 20px;
+        margin: auto;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #0002;
+    }
+    input, button {
+        padding: 8px;
+        margin: 6px 0;
+        width: 100%;
+    }
+
+    /* Thanh trên */
+    #topbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        background: #e8e8e8;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+    #dangxuat {
+        background: red;
+        color: white;
+        width: auto;
+        padding: 5px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #thuHienTai {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .lich-item {
+        background: #f0f0f0;
+        padding: 8px;
+        margin: 6px 0;
+        border-radius: 5px;
+    }
+    .btn-small {
+        padding: 5px 10px;
+        width: auto;
+        margin-right: 5px;
+    }
+
+    /* Popup sửa */
+    #popupSua {
+        display:none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right:0;
+        bottom:0;
+        background: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+    }
+    #khungSua {
+        background: white;
+        padding: 20px;
+        width: 350px;
+        border-radius: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Thanh tên + đăng xuất -->
+    <div id="topbar">
+        <span id="ten_hien_thi">Tài khoản: ...</span>
+        <button id="dangxuat">Đăng xuất</button>
+    </div>
+
+    <h2>Quản lý lịch trình</h2>
+
+    <label>Chọn ngày:</label>
+    <input type="date" id="chonNgay">
+
+    <div id="thuHienTai"></div>
+
+    <div id="formNhap" style="display:none;">
+        <label>Giờ:</label>
+        <input type="time" id="gio">
+
+        <label>Nội dung:</label>
+        <input type="text" id="noidung">
+
+        <button onclick="luuLichTrinh()" style="background-color: #f1e497;color: rgb(18, 18, 20);">Lưu lịch trình</button>
+    </div>
+
+    <h3>Lịch trong ngày</h3>
+    <div id="lichTrongNgay"></div>
+
+    <hr>
+
+    <button onclick="xem7Ngay()" style="background-color: #aad6f0;">Xem lịch trình 7 ngày tới</button>
+    <div id="ketQua" style="margin-top:20px;"></div>
+</div>
+
+<!-- Popup sửa lịch -->
+<div id="popupSua">
+    <div id="khungSua">
+        <h3>Sửa lịch trình</h3>
+
+        <label>Giờ:</label>
+        <input type="time" id="editGio">
+
+        <label>Nội dung:</label>
+        <input type="text" id="editNoiDung">
+
+        <button onclick="capNhatLich()">Cập nhật</button>
+        <button onclick="dongPopup()">Hủy</button>
+    </div>
+</div>
+
+<script>
+// =============================
+//   KIỂM TRA ĐĂNG NHẬP
+// =============================
+let user = localStorage.getItem("dangnhap_hien_tai");
+
+if (!user) {
+    alert("Bạn chưa đăng nhập!");
+    window.location.href = "dangnhap.html";
+}
+
+// Hiện tên người dùng
+document.getElementById("ten_hien_thi").innerText = "Tài khoản: " + user;
+
+// Nút đăng xuất
+document.getElementById("dangxuat").addEventListener("click", () => {
+    localStorage.removeItem("dangnhap_hien_tai");
+    alert("Đã đăng xuất!");
+    window.location.href = "trangchu.html";
+});
+
+
+// =============================
+//   Hàm đổi ngày sang THỨ
+// =============================
+function layThu(dateStr) {
+    let d = new Date(dateStr);
+    let thu = d.getDay();
+    const tenThu = ["Chủ nhật","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"];
+    return tenThu[thu];
+}
+
+// =============================
+//   Khi chọn ngày
+// =============================
+document.getElementById("chonNgay").addEventListener("change", function() {
+    let ngay = this.value;
+    if (ngay) {
+        document.getElementById("thuHienTai").innerText = "📅 " + layThu(ngay);
+        document.getElementById("formNhap").style.display = "block";
+        hienLichTrongNgay();
+    }
+});
+
+// =============================
+//   Lưu lịch vào LocalStorage
+// =============================
+function luuLichTrinh() {
+    let ngay = document.getElementById("chonNgay").value;
+    let gio = document.getElementById("gio").value;
+    let noidung = document.getElementById("noidung").value;
+
+    if (!ngay || !gio || !noidung) {
+        alert("Vui lòng nhập đầy đủ!");
+        return;
+    }
+
+    let ds = JSON.parse(localStorage.getItem("lichtrinh") || "[]");
+
+    ds.push({ user, ngay, gio, noidung });
+
+    localStorage.setItem("lichtrinh", JSON.stringify(ds));
+
+    alert("Đã lưu!");
+    document.getElementById("gio").value = "";
+    document.getElementById("noidung").value = "";
+
+    hienLichTrongNgay();
+}
+
+// =============================
+//   Hiện lịch trong ngày
+// =============================
+let idDangSua = -1;
+
+function hienLichTrongNgay() {
+    let ngay = document.getElementById("chonNgay").value;
+    let lichDiv = document.getElementById("lichTrongNgay");
+
+    if (!ngay) return;
+
+    let ds = JSON.parse(localStorage.getItem("lichtrinh") || "[]");
+
+    let lich = ds.filter((l, index) => {
+        l.index = index;
+        return l.user === user && l.ngay === ngay;
+    });
+
+    lichDiv.innerHTML = "";
+
+    if (lich.length === 0) {
+        lichDiv.innerHTML = "<i>Không có lịch</i>";
+        return;
+    }
+
+    lich.forEach(item => {
+        lichDiv.innerHTML += `
+            <div class="lich-item">
+                <b>${item.gio}</b> — ${item.noidung}<br>
+                <button class="btn-small" onclick="moPopupSua(${item.index})">Sửa</button>
+                <button class="btn-small" onclick="xoaLich(${item.index})">Xóa</button>
+            </div>
+        `;
+    });
+}
+
+// =============================
+//   Xóa lịch
+// =============================
+function xoaLich(idx) {
+    let ds = JSON.parse(localStorage.getItem("lichtrinh") || "[]");
+    ds.splice(idx, 1);
+    localStorage.setItem("lichtrinh", JSON.stringify(ds));
+
+    hienLichTrongNgay();
+    alert("Đã xóa!");
+}
+
+// =============================
+//   Popup sửa lịch
+// =============================
+function moPopupSua(idx) {
+    let ds = JSON.parse(localStorage.getItem("lichtrinh") || "[]");
+    let item = ds[idx];
+
+    idDangSua = idx;
+
+    document.getElementById("editGio").value = item.gio;
+    document.getElementById("editNoiDung").value = item.noidung;
+
+    document.getElementById("popupSua").style.display = "flex";
+}
+
+function dongPopup() {
+    document.getElementById("popupSua").style.display = "none";
+}
+
+// =============================
+//   Cập nhật lịch
+// =============================
+function capNhatLich() {
+    let ds = JSON.parse(localStorage.getItem("lichtrinh") || "[]");
+
+    ds[idDangSua].gio = document.getElementById("editGio").value;
+    ds[idDangSua].noidung = document.getElementById("editNoiDung").value;
+
+    localStorage.setItem("lichtrinh", JSON.stringify(ds));
+
+    alert("Đã cập nhật!");
+    dongPopup();
+    hienLichTrongNgay();
+}
+
+// =============================
+//  Xem 7 ngày tới (có Thứ + theo tài khoản)
+// =============================
+function xem7Ngay() {
+    let ketQua = document.getElementById("ketQua");
+    ketQua.innerHTML = "";
+
+    let ds = JSON.parse(localStorage.getItem("lichtrinh") || "[]");
+    let html = "<h3>Lịch 7 ngày tới:</h3>";
+
+    let today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+        let d = new Date();
+        d.setDate(today.getDate() + i);
+
+        let ngayISO = d.toISOString().split("T")[0];
+        let thu = layThu(ngayISO);
+
+        html += `<b>${ngayISO} (${thu})</b><br>`;
+
+        let list = ds.filter(item => item.user === user && item.ngay === ngayISO);
+
+        if (list.length === 0) {
+            html += "<i>Không có lịch</i><br><br>";
+        } else {
+            list.forEach(item => {
+                html += `- ${item.gio}: ${item.noidung}<br>`;
+            });
+            html += "<br>";
+        }
+    }
+
+    ketQua.innerHTML = html;
+}
+</script>
+
+</body>
+</html>

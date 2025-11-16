@@ -248,11 +248,8 @@
         <div class="thanh-giua">
             <a href="trangchu.html">Trang chủ</a>
             <a href="gioithieuchung.html">Giới thiệu chung</a>
-            <a href="#" id="btnTinhNang">Tính năng</a>
-            <div class="menu-tinh-nang" id="menuTinhNang">
-                <a href="trang2.html">Tin nhắn</a>
-                <a href="lich.html">Lịch</a>
-            </div>
+            <a href="tienichmorong.html" id="btnTinhNang">Tính năng</a>
+           
 
         </div>
 
@@ -268,8 +265,8 @@
     </div>
 
     <div class="anh-nen">
-        <img src="anhgiaodien.jpg" alt="lỗi ảnh" class="anhlon">
-        <h1 class="chu-tren-anh1">Chào mừng bạn đến Annd</h1><br><br>
+        <img src="anhnendep.png" alt="lỗi ảnh" class="anhlon">
+        <h1 class="chu-tren-anh1">Chào mừng bạn đến với Annd</h1><br><br>
         <h3 class="chu-tren-anh2">-Nơi gắn kết mọi người lại với nhau-</h3>
         
     </div>
@@ -296,11 +293,7 @@
             }
         });
         // Mở / đóng menu Tính năng
-document.getElementById("btnTinhNang").addEventListener("click", function (e) {
-    e.preventDefault();
-    let menu = document.getElementById("menuTinhNang");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-});
+
 
 // Ẩn menu khi bấm ra ngoài
 document.addEventListener("click", function(e) {

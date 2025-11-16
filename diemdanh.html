@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Điểm danh</title>
+
+<style>
+body {
+  font-family: Arial;
+
+  /* 1. Đặt hình nền */
+  background-image: url("nenthu.png");
+  
+  /* 2. Đảm bảo hình ảnh lấp đầy toàn bộ nền */
+  background-size: cover;
+  
+  /* 3. Ngăn hình ảnh lặp lại */
+  background-repeat: no-repeat;
+  
+  /* 4. Giữ hình nền cố định khi cuộn */
+  background-attachment: fixed;
+  
+  /* 5. Căn giữa hình ảnh (tùy chọn) */
+  background-position: center center;
+
+  margin: 0;
+  padding: 0;
+}
+
+#user-info {
+  position: fixed;
+  top: 10px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(255,255,255,0.85);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+}
+
+#logout-btn {
+  background: #ff5454;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#logout-btn:hover { background: #d63b3b; }
+
+.container {
+  margin-top: 100px;
+  text-align: center;
+}
+
+button {
+  padding: 12px 20px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+}
+button:hover { background: #388e3c; }
+
+#pet-btn {
+  margin-top: 20px;
+  background: #5563de;
+}
+#pet-btn:hover { background: #3a45b0; }
+
+#pet-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 99999;
+}
+
+.pet-option { cursor: pointer; transition: 0.2s; }
+.pet-option:hover { transform: scale(1.1); }
+
+.pet-btns {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+}
+.pet-btns button {
+  padding: 12px 18px;
+  font-size: 17px;
+}
+
+#energy-bar-container {
+  width: 80%;
+  max-width: 350px;
+  height: 25px;
+  background: #333;
+  border-radius: 10px;
+  margin: 15px auto;
+  overflow: hidden;
+  border: 2px solid white;
+}
+#energy-bar {
+  height: 100%;
+  width: 0%;
+  background: #00ff6a;
+  transition: 0.3s;
+}
+</style>
+</head>
+<body>
+
+<!-- Góc phải -->
+<div id="user-info">
+  <span id="username-display"></span>
+  <button id="logout-btn">Đăng xuất</button>
+</div>
+
+<div class="container">
+  <h1>Điểm danh hôm nay</h1>
+  <h2 id="points-display">Điểm: 0</h2>
+  <button id="diemdanh-btn">Điểm danh</button>
+  <br><br>
+  <button id="pet-btn">Chăm sóc thú</button>
+</div>
+
+<!-- PET SCREEN -->
+<div id="pet-screen">
+
+  <div id="choose-pet" style="display:none; text-align:center;">
+    <h2>Chọn thú cưng</h2>
+    <div style="display:flex; gap:20px; margin-top:20px;">
+      <img src="fox.png" class="pet-option" data-pet="fox" width="120">
+      <img src="cat.png" class="pet-option" data-pet="cat" width="120">
+      <img src="capy.png" class="pet-option" data-pet="capy" width="120">
+    </div>
+    <p style="margin-top:20px;">(Chỉ được chọn 1 lần – muốn đổi phải xoá thú cưng)</p>
+    <button id="choose-back">Quay lại</button>
+  </div>
+
+  <div id="pet-view" style="display:none; text-align:center;">
+    <img id="pet-img" src="" width="1px">
+    <div id="pet-age">Tuổi: 1</div>
+
+    <div id="energy-bar-container">
+      <div id="energy-bar"></div>
+    </div>
+
+    <div class="pet-btns">
+      <button id="back-btn">Quay lại</button>
+      <button id="feed-btn">Cho thú ăn (-100 điểm)</button>
+      <button id="delete-pet" style="background:#ff4444;">Xoá thú</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let username = localStorage.getItem("dangnhap_hien_tai");
+if (!username) window.location.href = "dangnhap.html";
+
+document.getElementById("username-display").textContent = "Tài khoản: " + username;
+
+// DATA
+let pet = localStorage.getItem(username + "_pet");
+let points = +localStorage.getItem(username + "_pet_points") || 0;
+let age = +localStorage.getItem(username + "_pet_age") || 1;
+let size = +localStorage.getItem(username + "_pet_size") || 100;
+let energy = +localStorage.getItem(username + "_pet_energy") || 0;
+
+// Last feed
+let lastFeed = localStorage.getItem(username + "_last_feed");
+
+// Last check
+let lastCheck = localStorage.getItem(username + "_last_check");
+
+// Today
+function today() {
+  return new Date().toLocaleDateString("vi-VN");
+}
+
+document.getElementById("points-display").textContent = "Điểm: " + points;
+
+// Pet images
+const petImages = {
+  fox: "fox.png",
+  cat: "cat.png",
+  capy: "capy.png"
+};
+
+// Logout
+document.getElementById("logout-btn").onclick = () => {
+  localStorage.removeItem("dangnhap_hien_tai");
+  window.location.href = "dangnhap.html";
+};
+
+// Điểm danh — CHỈ 1 LẦN MỖI NGÀY
+document.getElementById("diemdanh-btn").onclick = () => {
+
+  // ⛔ Nếu chưa có thú → không cho điểm danh
+  if (!pet) {
+    alert("Bạn phải chọn thú trước khi điểm danh!");
+    return;
+  }
+
+  let todayStr = today();
+  lastCheck = localStorage.getItem(username + "_last_check");
+
+  if (lastCheck === todayStr) {
+    alert("Bạn đã điểm danh hôm nay!");
+    return;
+  }
+
+  points += 100;
+  localStorage.setItem(username + "_pet_points", points);
+
+  localStorage.setItem(username + "_last_check", todayStr);
+  lastCheck = todayStr;
+
+  document.getElementById("points-display").textContent = "Điểm: " + points;
+  alert("Điểm danh thành công! +100 điểm");
+};
+
+
+// PET MENU
+document.getElementById("pet-btn").onclick = () => {
+  document.getElementById("pet-screen").style.display = "flex";
+
+  if (!pet) {
+    document.getElementById("choose-pet").style.display = "block";
+    document.getElementById("pet-view").style.display = "none";
+  } else {
+    checkHunger();
+    loadPet();
+  }
+};
+
+document.getElementById("back-btn").onclick = closePetScreen;
+document.getElementById("choose-back").onclick = closePetScreen;
+
+function closePetScreen() {
+  document.getElementById("pet-screen").style.display = "none";
+}
+
+// Chọn thú
+document.querySelectorAll(".pet-option").forEach(img => {
+  img.onclick = () => {
+    pet = img.dataset.pet;
+    localStorage.setItem(username + "_pet", pet);
+
+    age = 1;
+    size = 200;
+    points = 0;
+    energy = 0;
+
+    localStorage.setItem(username + "_pet_age", age);
+    localStorage.setItem(username + "_pet_size", size);
+    localStorage.setItem(username + "_pet_energy", energy);
+    localStorage.setItem(username + "_pet_points", points);
+
+    alert("Bạn đã nhận thú cưng mới!");
+    loadPet();
+  };
+});
+
+// Load pet
+function loadPet() {
+  document.getElementById("choose-pet").style.display = "none";
+  document.getElementById("pet-view").style.display = "block";
+
+  document.getElementById("pet-img").src = petImages[pet];
+  document.getElementById("pet-img").style.width = size + "px";
+  document.getElementById("pet-age").textContent = "Tuổi: " + age;
+
+  document.getElementById("points-display").textContent = "Điểm: " + points;
+
+  updateEnergyBar();
+}
+
+// Update energy bar
+function updateEnergyBar() {
+  let percent = (energy / 300) * 100;
+  document.getElementById("energy-bar").style.width = percent + "%";
+}
+
+// Feed pet
+document.getElementById("feed-btn").onclick = () => {
+  if (points < 100) return alert("Không đủ điểm!");
+
+  points -= 100;
+  energy += 100;
+
+  if (energy >= 300) {
+    energy = 0;
+    age += 1;
+    size += 15;
+    alert("Năng lượng đầy! Thú lên level mới!");
+  }
+
+  localStorage.setItem(username + "_pet_points", points);
+  localStorage.setItem(username + "_pet_age", age);
+  localStorage.setItem(username + "_pet_size", size);
+  localStorage.setItem(username + "_pet_energy", energy);
+
+  localStorage.setItem(username + "_last_feed", today());
+
+  loadPet();
+};
+
+// Check hunger
+function checkHunger() {
+  if (!lastFeed) return;
+
+  if (lastFeed !== today()) {
+    points -= 200;
+    if (points < 0) points = 0;
+
+    localStorage.setItem(username + "_pet_points", points);
+
+    alert("Thú bị bỏ đói hôm qua! -200 điểm");
+  }
+}
+
+// Delete pet
+document.getElementById("delete-pet").onclick = () => {
+  if (!confirm("Xoá thú cưng? Mọi điểm và tuổi thú sẽ mất!")) return;
+
+  ["_pet", "_pet_age", "_pet_size", "_pet_points", "_pet_energy", "_last_feed"]
+    .forEach(key => localStorage.removeItem(username + key));
+
+  pet = null;
+  points = 0;
+  age = 1;
+  size = 200;
+  energy = 0;
+
+  document.getElementById("points-display").textContent = "Điểm: 0";
+
+  document.getElementById("choose-pet").style.display = "block";
+  document.getElementById("pet-view").style.display = "none";
+
+  alert("Bạn đã xoá thú cưng!");
+};
+</script>
+
+</body>
+</html>
