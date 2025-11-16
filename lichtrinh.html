@@ -11,8 +11,8 @@
         padding: 20px;
     }
     .container {
-        width: 430px;
-        background: white;
+        width: 90%;
+        background: rgb(238, 221, 190);
         padding: 20px;
         margin: auto;
         border-radius: 10px;
@@ -29,10 +29,11 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 15px;
-        background: #e8e8e8;
+        background: #6064a7;
         padding: 10px;
         border-radius: 10px;
         font-weight: bold;
+        color: bisque;
     }
     #dangxuat {
         background: red;
@@ -78,6 +79,23 @@
         width: 350px;
         border-radius: 10px;
     }
+
+    /* ======= NỀN & CHỮ TO CHO PHẦN 7 NGÀY ======= */
+    .ngay7 {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+    .lich7 {
+        background: #f9f2c8;
+        padding: 6px 10px;
+        margin: 5px 0;
+        border-radius: 6px;
+        font-size: 17px;
+    }
 </style>
 </head>
 <body>
@@ -89,7 +107,11 @@
         <span id="ten_hien_thi">Tài khoản: ...</span>
         <button id="dangxuat">Đăng xuất</button>
     </div>
-       <div style="width: 50px; " ><a href="trangchu.html" ><img src="ngoinha.jpg" alt="" width="100%" style="border-radius: 10px;"></a> <a href="tienichmorong.html" ><img src="muiten.jpg" alt="" width="100%" style="border-radius: 10px; margin-top: 20px;"></a></div>
+
+    <div style="width: 50px;background-color: black;padding: 5px; border-radius: 10px;">
+        <a href="trangchu.html"><img src="ngoinha.jpg" width="100%" style="border-radius: 10px;"></a>
+        <a href="tienichmorong.html"><img src="muiten.jpg" width="100%" style="border-radius: 10px; margin-top: 20px;"></a>
+    </div>
 
     <h2>Quản lý lịch trình</h2>
 
@@ -153,7 +175,6 @@ document.getElementById("dangxuat").addEventListener("click", () => {
     alert("Đã đăng xuất!");
     window.location.href = "trangchu.html";
 });
-
 
 // =============================
 //   Hàm đổi ngày sang THỨ
@@ -287,7 +308,7 @@ function capNhatLich() {
 }
 
 // =============================
-//  Xem 7 ngày tới (có Thứ + theo tài khoản)
+//  Xem 7 ngày tới (đã thêm nền + chữ to)
 // =============================
 function xem7Ngay() {
     let ketQua = document.getElementById("ketQua");
@@ -305,18 +326,20 @@ function xem7Ngay() {
         let ngayISO = d.toISOString().split("T")[0];
         let thu = layThu(ngayISO);
 
-        html += `<b>${ngayISO} (${thu})</b><br>`;
+        html += `<div class="ngay7"><b>${ngayISO} (${thu})</b><br>`;
 
         let list = ds.filter(item => item.user === user && item.ngay === ngayISO);
 
         if (list.length === 0) {
-            html += "<i>Không có lịch</i><br><br>";
+            html += "<i>Không có lịch</i></div>";
         } else {
             list.forEach(item => {
-                html += `- ${item.gio}: ${item.noidung}<br>`;
+                html += `<div class="lich7">⏰ ${item.gio} — ${item.noidung}</div>`;
             });
-            html += "<br>";
+            html += "</div>";
         }
+
+        html += "<br>";
     }
 
     ketQua.innerHTML = html;

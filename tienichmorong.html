@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Tiện ích mở rộng</title>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -16,15 +17,24 @@
         color: #333;
     }
 
+    /* ======= CHIA 1 HÀNG 2 KHỐI – TỰ CO GIÃN ======= */
     .container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(2, minmax(150px, 1fr)); /* 1 hàng 2 khối */
         gap: 20px;
         justify-items: center;
     }
 
+    /* Dành cho màn hình rất nhỏ */
+    @media (max-width: 450px) {
+        .container {
+            grid-template-columns: repeat(1, 1fr); /* 1 hàng 1 khối */
+        }
+    }
+
     .item {
-        width: 180px;
+        width: 100%;
+        max-width: 200px; /* Giới hạn để không quá to */
         background: white;
         border-radius: 10px;
         box-shadow: 0 3px 8px rgba(0,0,0,0.15);
@@ -51,19 +61,18 @@
     .name {
         margin-top: 10px;
         font-size: 20px;
-        margin-top: 10px;
         font-weight: bold;
         font-family: 'Inter', sans-serif;
-    }
-
-    .price {
-        color: #0077ff;
-        margin-top: 5px;
     }
 </style>
 </head>
 
 <body>
+      <div style="width: 50px;background-color: black;padding: 5px; border-radius: 10px;">
+        <a href="trangchu.html"><img src="ngoinha.jpg" width="100%" style="border-radius: 10px;"></a>
+        
+       
+    </div>
 
 <h1>Tiện ích mở rộng</h1>
 
@@ -72,46 +81,42 @@
     <a href="lich.html" class="item">
         <img src="anhnhatki.png" />
         <div class="name">Nhật kí</div>
-        
     </a>
 
     <a href="quanlitaikhoan.html" class="item">
         <img src="quanlitaikhoan.jpg" />
         <div class="name">Quản lí tài khoản</div>
-
     </a>
 
     <a href="Quanlichitieu.html" class="item">
         <img src="logochitieu.jpg" />
         <div class="name">Quản lí chi tiêu</div>
-      
     </a>
 
     <a href="lichtrinh.html" class="item">
         <img src="lichtrinhbanthan.jpg" />
         <div class="name">Lịch trình bản thân</div>
-
     </a>
+
     <a href="kholuutru.html" class="item">
         <img src="kholuu.jpg" />
         <div class="name">Kho lưu trữ</div>
+    </a>
 
     <a href="https://zalo.me/g/grhdjf696" class="item">
         <img src="Traodoi.jpg" />
         <div class="name">Trao đổi kết nối</div>
     </a>
+
     <a href="lamnetanh.html" class="item">
         <img src="logonetanh.jpg" />
         <div class="name">Làm nét ảnh</div>
-        
     </a>
+
     <a href="diemdanh.html" class="item">
         <img src="nuoithucon.jpg" />
         <div class="name">Nuôi thú cưng</div>
-        
     </a>
-
-    
 
 </div>
 
