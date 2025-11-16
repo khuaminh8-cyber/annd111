@@ -6,7 +6,7 @@
     <meta property="og:title" content="Annd nè">
     <meta property="og:description" content="Trang đăng nhập Annd">
     <meta property="og:image" content="logo.jpg">
-    <title>Trang Web Demo</title>
+    <title>Trang chủ Annd</title>
 
     <style>
         body {
@@ -37,6 +37,7 @@
             transform: translateX(-50%);
             display: flex;
             white-space: nowrap;
+            margin: 5px;
         }
         .thanh-giua a {
             color: white;
@@ -44,6 +45,7 @@
             text-decoration: none;
             font-size: 24px;
             width: auto;
+            
         }
 
         .thanh-phai .anh-dai-dien {
@@ -175,7 +177,7 @@
         .khoicuoi {
             position: absolute;
             left: 26px;
-            bottom: -5%;
+            bottom: -8%;
             margin-bottom: 20px;
             width: 300px;
             padding: 20px;
@@ -222,8 +224,8 @@
 <body>
 
     <div class="thanh-cong-cu">
-        <div class="thanh-trai">
-            <a href="trangchu.html"><img src="logo.jpg" alt="Logo"></a>
+        <div class="thanh-trai" style="z-index: 10;">
+            <a href="trangchu.html" ><img src="logo.jpg" alt="Logo"></a>
         </div>
 
         <div class="thanh-giua">
@@ -232,15 +234,15 @@
             <a href="tienichmorong.html" id="btnTinhNang">Tính năng</a>
         </div>
 
-        <div class="thanh-phai">
+        <div class="thanh-phai" style="z-index: 5;">
             <span id="tenUser"></span>
             <div class="anh-dai-dien" onclick="toggleMenu()"><img src="avatar.jpg" alt=""></div>
         </div>
     </div>
 
-    <div class="menu-tai-khoan" id="menu">
+    <div class="menu-tai-khoan" id="menu" style="z-index: 10;">
         <a href="dangnhap.html">Đăng nhập tài khoản</a>
-        <a href="#">Liên hệ khách hàng</a>
+        <a href="https://www.facebook.com/profile.php?id=61579041835386">Liên hệ khách hàng</a>
     </div>
 
     <div class="anh-nen">
@@ -251,7 +253,7 @@
 
     <div class="khoicuoi">
         <h3>Thông Tin Liên Hệ</h3>
-        <p><strong>📞 Điện thoại:</strong> 0866887461</p>
+        <p style="color: white;"><strong>📞 Điện thoại:</strong> 0866887461</p>
         <p><strong>📧 Email:</strong> anndkocskh@gmail.com</p>
     </div>
 
